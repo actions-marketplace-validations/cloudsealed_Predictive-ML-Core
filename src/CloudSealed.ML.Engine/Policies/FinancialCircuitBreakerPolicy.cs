@@ -12,6 +12,9 @@ namespace CloudSealed.ML.Engine.Policies
             public double DailyBudgetLimitUsd { get; set; }
             public int VelocityAnomalyScore { get; set; } // 0 - 100
             public double UnsettledCommittedSpendUsd { get; set; }
+            public string AgentName { get; set; } = "generic-agent";
+            public double EstimatedTaskCostUsd { get; set; }
+            public double MaxTaskCostLimitUsd { get; set; } = 0.50; // Limite máximo padrão por execução de tarefa
         }
 
         public class CircuitBreakerResult
@@ -22,6 +25,7 @@ namespace CloudSealed.ML.Engine.Policies
             public double HourlySpendRatio { get; set; }
             public double BudgetBurnPercent { get; set; }
             public string TriggerReason { get; set; } = string.Empty;
+            public string AgentName { get; set; } = string.Empty;
         }
 
         /// <summary>
@@ -82,11 +86,27 @@ namespace CloudSealed.ML.Engine.Policies
                 };
             }
 
+            // Condição 0: Hard Stop por estouro de custo estimado em uma única tarefa de IA (Pre-Flight Agent Protection)
+            if (input.EstimatedTaskCostUsd > 0 && input.MaxTaskCostLimitUsd > 0 && input.EstimatedTaskCostUsd > input.MaxTaskCostLimitUsd)
+            {
+                return new CircuitBreakerResult
+                {
+                    IsTripped = true,
+                    State = "OPEN",
+                    ActionRequired = "HARD_STOP",
+                    AgentName = input.AgentName,
+                    HourlySpendRatio = hourlyRatio,
+                    BudgetBurnPercent = budgetBurn,
+                    TriggerReason = $"DISJUNTOR PREVENTIVO: Tarefa do agente '{input.AgentName}' possui custo estimado de ${Math.Round(input.EstimatedTaskCostUsd, 4)} USD, excedendo o teto por tarefa de ${Math.Round(input.MaxTaskCostLimitUsd, 2)} USD."
+                };
+            }
+
             return new CircuitBreakerResult
             {
                 IsTripped = false,
                 State = "CLOSED",
                 ActionRequired = "NONE",
+                AgentName = input.AgentName,
                 HourlySpendRatio = hourlyRatio,
                 BudgetBurnPercent = budgetBurn,
                 TriggerReason = "Consumo e velocidade de gastos operando dentro dos parâmetros de normalidade."
