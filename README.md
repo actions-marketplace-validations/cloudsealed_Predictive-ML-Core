@@ -18,7 +18,7 @@ In modern cloud-native engineering, microservices, complex cloud architectures, 
 
 Traditional tools either force manual compliance questionnaires (AWS Well-Architected Tool) or rely on **black-box AI models that hallucinate risk scores** without auditability.
 
-**`CloudSealed.ML.Core` solves this problem.** It automatically ingests declared infrastructure (Terraform, Kubernetes, Docker Compose, Mermaid diagrams, or JSON inventories), computes dependency blast-radii in $O(V+E)$, and scores architecture risk across 3 core dimensions with **100% deterministic, auditable rules**.
+CloudSealed.ML.Core addresses these challenges by It automatically ingests declared infrastructure (Terraform, Kubernetes, Docker Compose, Mermaid diagrams, or JSON inventories), computes dependency blast-radii in $O(V+E)$, and scores architecture risk across 3 core dimensions with **100% deterministic, auditable rules**.
 
 ```
                            INPUT INGESTION
