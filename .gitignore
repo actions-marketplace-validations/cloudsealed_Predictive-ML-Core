@@ -490,3 +490,19 @@ $RECYCLE.BIN/
 
 # Local publish staging
 dist_publish/
+
+# Build artifacts & logs (should never be committed)
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+.env.local
+.env.*.local
+*.tmp
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.ncrunchproject
